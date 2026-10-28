@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antrean Charge Motor Listrik MAKA Tangerang Raya</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Family Inter & Orbitron for Futuristic look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#e6fff4',
+              100: '#b3ffe0',
+              400: '#00ff88',
+              500: '#00e676',
+              600: '#00b359',
+              900: '#003b1d',
+            },
+            cyber: '#0b132b',
+            cyberlight: '#1c2541',
+            cyanneon: '#00f5d4'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Orbitron', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #080d1a;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+    }
+    .neon-border {
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), inset 0 0 15px rgba(0, 255, 136, 0.1);
+    }
+    .neon-text {
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-ticket, #printable-ticket * {
+        visibility: visible;
+      }
+      #printable-ticket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        color: #000 !important;
+        background: #fff !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- Header Section -->
+  <header class="bg-cyberlight/80 backdrop-blur-md border-b border-brand-500/30 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center text-cyber font-bold text-2xl shadow-lg shadow-brand-500/50">
+          <i class="fa-solid fa-bolt-lightning"></i>
+        </div>
+        <div>
+          <h1 class="font-display font-extrabold text-lg sm:text-xl text-white tracking-wide">
+            MAKA <span class="text-brand-400">CHARGING</span> HUB
+          </h1>
+          <p class="text-xs text-slate-400">Antrean Charge Motor Listrik MAKA Tangerang Raya</p>
+        </div>
+      </div>
+
+      <!-- Navigation / Switch View Buttons -->
+      <div class="flex items-center bg-cyber rounded-lg p-1 border border-slate-700">
+        <button id="btn-tab-user" onclick="switchTab('user')" class="px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 bg-brand-500 text-cyber font-semibold shadow">
+          <i class="fa-solid fa-user mr-1.5"></i> Area Pengunjung
+        </button>
+        <button id="btn-tab-admin" onclick="switchTab('admin')" class="px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-user-gear mr-1.5"></i> Panel Admin
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+    <!-- ==================== USER VIEW ==================== -->
+    <div id="view-user" class="space-y-8">
+      <!-- Info Header -->
+      <div class="bg-gradient-to-r from-cyberlight to-cyber border border-brand-500/20 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl"></div>
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+          <div>
+            <span class="inline-block px-3 py-1 bg-brand-500/10 text-brand-400 border border-brand-500/30 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
+              <i class="fa-solid fa-circle text-[8px] animate-pulse mr-1"></i> Stasiun Pengisian Aktif
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-display font-bold text-white">Stasiun Tangerang Raya</h2>
+            <p class="text-slate-400 text-sm mt-1">Layanan Pengisian Daya Cepat Motor Listrik MAKA. Ambil nomor antrean online tanpa perlu mengantre fisik.</p>
+          </div>
+          <!-- Realtime Current Status Card -->
+          <div class="bg-cyber/80 border border-slate-700 rounded-xl p-4 text-center min-w-[200px]">
+            <span class="text-xs text-slate-400 uppercase tracking-wider block">Sedang Dilayani</span>
+            <div id="user-current-number" class="text-3xl font-display font-extrabold text-brand-400 neon-text my-1">
+              ---
+            </div>
+            <span id="user-current-status" class="text-xs text-slate-400">Belum ada aktivitas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Layout: Form & Ticket Display -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Form Take Ticket (5 cols) -->
+        <div class="lg:col-span-5 bg-cyberlight/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white flex items-center mb-4">
+            <i class="fa-solid fa-ticket text-brand-400 mr-2"></i> Ambil Nomor Antrean Baru
+          </h3>
+          <form id="form-queue" onsubmit="handleCreateQueue(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Nama Pemilik Motor</label>
+              <input type="text" id="input-name" required placeholder="Contoh: Budi Santoso" class="w-full bg-cyber border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 transition-colors">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Nomor Plat / ID Motor MAKA</label>
+              <input type="text" id="input-plat" required placeholder="Contoh: B 1234 ABC / M-8821" class="w-full bg-cyber border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 uppercase transition-colors">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">No. WhatsApp / HP</label>
+              <input type="tel" id="input-phone" required placeholder="Contoh: 081234567890" class="w-full bg-cyber border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-400 transition-colors">
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-brand-500 to-cyanneon text-cyber font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-brand-500/20 hover:opacity-95 transition-all duration-300 flex items-center justify-center space-x-2 text-sm uppercase tracking-wider mt-6">
+              <i class="fa-solid fa-bolt"></i>
+              <span>Dapatkan Nomor Antrean</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Ticket / Active Queue Details (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col justify-between">
+          <!-- Active Ticket Container -->
+          <div id="active-ticket-container" class="bg-cyberlight/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl relative min-h-[340px] flex flex-col justify-center items-center text-center">
+            <!-- Dynamic content via JavaScript -->
+            <div id="ticket-empty-state" class="text-slate-500 space-y-3">
+              <i class="fa-solid fa-qrcode text-6xl text-slate-700"></i>
+              <p class="text-sm">Anda belum mengambil nomor antrean atau nomor belum dimasukkan.</p>
+            </div>
+
+            <div id="ticket-active-state" class="hidden w-full max-w-md bg-cyber border border-brand-500/40 rounded-2xl p-6 relative overflow-hidden neon-border">
+              <div class="absolute top-0 right-0 bg-brand-500 text-cyber text-[10px] font-bold uppercase px-3 py-1 rounded-bl-lg">
+                Tiket Digital
+              </div>
+              <p class="text-xs text-brand-400 uppercase font-bold tracking-widest">MAKA Tangerang Raya</p>
+              
+              <div class="my-4">
+                <span class="text-xs text-slate-400 block mb-1">Nomor Antrean Anda</span>
+                <span id="ticket-num" class="text-5xl font-display font-extrabold text-white tracking-wider">A-001</span>
+              </div>
+
+              <div id="ticket-status-badge" class="inline-block px-3 py-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-full text-xs font-semibold mb-4">
+                Menunggu Antrean
+              </div>
+
+              <div class="border-t border-b border-slate-800 py-3 my-2 text-left space-y-1.5 text-xs text-slate-300">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Nama:</span>
+                  <span id="ticket-name" class="font-semibold text-white">---</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Plat/ID Motor:</span>
+                  <span id="ticket-plat" class="font-semibold text-white">---</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Waktu Ambil:</span>
+                  <span id="ticket-time" class="text-slate-300">---</span>
+                </div>
+              </div>
+
+              <!-- Fake QR Code SVG -->
+              <div class="flex items-center justify-center my-4">
+                <div class="bg-white p-2 rounded-lg inline-block">
+                  <svg class="w-24 h-24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" fill="white"/>
+                    <path d="M10 10H40V40H10V10ZM15 15V35H35V15H15Z" fill="black"/>
+                    <path d="M20 20H30V30H20V20Z" fill="black"/>
+                    <path d="M60 10H90V40H60V10ZM65 15V35H85V15H65Z" fill="black"/>
+                    <path d="M70 20H80V30H70V20Z" fill="black"/>
+                    <path d="M10 60H40V90H10V60ZM15 65V85H35V65H15Z" fill="black"/>
+                    <path d="M20 70H30V80H20V70Z" fill="black"/>
+                    <path d="M50 10H55V25H50V10ZM55 30H60V45H55V30ZM70 50H90V55H70V50ZM50 60H65V70H50V60ZM75 65H90V80H75V65ZM60 75H70V90H60V75Z" fill="black"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="flex gap-2 mt-4">
+                <button onclick="window.print()" class="flex-1 bg-cyberlight hover:bg-slate-700 text-slate-200 border border-slate-600 font-semibold py-2 rounded-lg text-xs transition">
+                  <i class="fa-solid fa-print mr-1"></i> Cetak Tiket
+                </button>
+                <button onclick="cancelMyQueue()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-semibold px-3 py-2 rounded-lg text-xs transition">
+                  Batalkan
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Check Status Box -->
+          <div class="mt-4 bg-cyberlight/40 border border-slate-700/50 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="text-xs text-slate-400">Punya Kode Antrean? Cek status Anda:</span>
+            <div class="flex w-full sm:w-auto gap-2">
+              <input type="text" id="check-code-input" placeholder="Misal: A-001" class="bg-cyber border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none uppercase w-full sm:w-32">
+              <button onclick="checkQueueStatus()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg transition">
+                Cek Status
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- General Queue Table View -->
+      <div class="bg-cyberlight/40 border border-slate-700/60 rounded-2xl p-6 shadow-xl">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
+          <span><i class="fa-solid fa-list-ol text-brand-400 mr-2"></i> Daftar Antrean Hari Ini</span>
+          <span class="text-xs text-slate-400 font-normal">Diperbarui secara real-time</span>
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="bg-cyber text-xs uppercase text-slate-400 border-b border-slate-700">
+              <tr>
+                <th class="px-4 py-3">No. Antrean</th>
+                <th class="px-4 py-3">Nama</th>
+                <th class="px-4 py-3">Plat / ID Motor</th>
+                <th class="px-4 py-3">Waktu</th>
+                <th class="px-4 py-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="public-queue-tbody" class="divide-y divide-slate-800">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== ADMIN PANEL VIEW ==================== -->
+    <div id="view-admin" class="hidden space-y-8">
+      <!-- Admin Top Banner & Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Stat 1 -->
+        <div class="bg-cyberlight/80 border border-slate-700 rounded-xl p-5 shadow-md">
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="text-xs font-semibold uppercase">Total Antrean</span>
+            <i class="fa-solid fa-users text-brand-400"></i>
+          </div>
+          <div id="stat-total" class="text-3xl font-display font-bold text-white mt-2">0</div>
+        </div>
+        <!-- Stat 2 -->
+        <div class="bg-cyberlight/80 border border-slate-700 rounded-xl p-5 shadow-md">
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="text-xs font-semibold uppercase">Menunggu</span>
+            <i class="fa-solid fa-clock text-yellow-400"></i>
+          </div>
+          <div id="stat-waiting" class="text-3xl font-display font-bold text-yellow-400 mt-2">0</div>
+        </div>
+        <!-- Stat 3 -->
+        <div class="bg-cyberlight/80 border border-slate-700 rounded-xl p-5 shadow-md">
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="text-xs font-semibold uppercase">Sedang Charge</span>
+            <i class="fa-solid fa-bolt text-brand-400"></i>
+          </div>
+          <div id="stat-charging" class="text-3xl font-display font-bold text-brand-400 mt-2">0</div>
+        </div>
+        <!-- Stat 4 -->
+        <div class="bg-cyberlight/80 border border-slate-700 rounded-xl p-5 shadow-md">
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="text-xs font-semibold uppercase">Selesai</span>
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+          </div>
+          <div id="stat-completed" class="text-3xl font-display font-bold text-emerald-400 mt-2">0</div>
+        </div>
+      </div>
+
+      <!-- Admin Main Action Hub -->
+      <div class="bg-cyberlight/80 border border-slate-700 rounded-2xl p-6 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Current Serving Banner (5 cols) -->
+        <div class="lg:col-span-5 bg-cyber border border-brand-500/30 rounded-xl p-6 flex flex-col justify-between items-center text-center relative overflow-hidden">
+          <span class="text-xs text-brand-400 font-bold uppercase tracking-wider">Antrean Sedang Dilayani / Dipanggil</span>
+          
+          <div class="my-6">
+            <span id="admin-current-num" class="text-6xl font-display font-black text-brand-400 neon-text">---</span>
+            <p id="admin-current-info" class="text-sm text-slate-300 mt-2">Tidak ada motor yang sedang di-charge</p>
+          </div>
+
+          <div class="w-full flex gap-2">
+            <button onclick="callCurrentAgain()" id="btn-recall" disabled class="flex-1 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/40 text-yellow-400 text-xs font-bold py-2.5 rounded-lg disabled:opacity-50 transition">
+              <i class="fa-solid fa-volume-high mr-1"></i> Panggil Ulang
+            </button>
+            <button onclick="completeCharging()" id="btn-complete" disabled class="flex-1 bg-brand-500 hover:bg-brand-400 text-cyber text-xs font-bold py-2.5 rounded-lg disabled:opacity-50 transition">
+              <i class="fa-solid fa-check mr-1"></i> Selesai Charging
+            </button>
+          </div>
+        </div>
+
+        <!-- Call Next Control Area (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-lg font-bold text-white mb-2">Kontrol Panggilan Antrean</h3>
+            <p class="text-slate-400 text-xs mb-4">Tekan tombol di bawah untuk memanggil antrean berikutnya secara otomatis menggunakan suara notifikasi.</p>
+            
+            <button onclick="callNextQueue()" class="w-full bg-gradient-to-r from-brand-500 to-cyanneon text-cyber font-display font-black py-4 px-6 rounded-xl shadow-lg shadow-brand-500/30 hover:scale-[1.01] active:scale-[0.99] transition text-base uppercase tracking-wider flex items-center justify-center space-x-3">
+              <i class="fa-solid fa-bullhorn text-xl"></i>
+              <span>Panggil Nomor Berikutnya</span>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-slate-800 pt-4">
+            <div class="flex items-center space-x-2">
+              <input type="checkbox" id="voice-enable" checked class="accent-brand-500 w-4 h-4 rounded">
+              <label for="voice-enable" class="text-xs text-slate-300">Aktifkan Suara Panggilan (Voice TTS)</label>
+            </div>
+            
+            <button onclick="confirmResetAll()" class="text-xs text-red-400 hover:text-red-300 underline font-medium">
+              <i class="fa-solid fa-trash mr-1"></i> Reset Antrean Hari Ini
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Queue Table Filter & Management -->
+      <div class="bg-cyberlight/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h3 class="text-lg font-bold text-white">Kelola Semua Antrean</h3>
+          
+          <!-- Status Filter Tabs -->
+          <div class="flex flex-wrap gap-1.5 bg-cyber p-1 rounded-lg border border-slate-700 text-xs">
+            <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-md font-medium text-cyber bg-brand-400 font-bold">Semua</button>
+            <button onclick="setFilter('waiting')" id="filter-waiting" class="px-3 py-1.5 rounded-md font-medium text-slate-400 hover:text-white">Menunggu</button>
+            <button onclick="setFilter('charging')" id="filter-charging" class="px-3 py-1.5 rounded-md font-medium text-slate-400 hover:text-white">Sedang Charge</button>
+            <button onclick="setFilter('completed')" id="filter-completed" class="px-3 py-1.5 rounded-md font-medium text-slate-400 hover:text-white">Selesai</button>
+            <button onclick="setFilter('cancelled')" id="filter-cancelled" class="px-3 py-1.5 rounded-md font-medium text-slate-400 hover:text-white">Batal</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="bg-cyber text-xs uppercase text-slate-400 border-b border-slate-700">
+              <tr>
+                <th class="px-4 py-3">No. Antrean</th>
+                <th class="px-4 py-3">Nama Pemilik</th>
+                <th class="px-4 py-3">Plat / ID Motor</th>
+                <th class="px-4 py-3">No. WhatsApp</th>
+                <th class="px-4 py-3">Waktu Dibuat</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 text-right">Aksi Admin</th>
+              </tr>
+            </thead>
+            <tbody id="admin-queue-tbody" class="divide-y divide-slate-800">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Printable Area (Hidden on Web View) -->
+  <div id="printable-ticket" class="hidden p-8 text-black bg-white">
+    <div class="text-center border-b pb-4 mb-4">
+      <h2 class="text-2xl font-bold">MAKA CHARGING HUB</h2>
+      <p class="text-sm">Stasiun Tangerang Raya</p>
+      <p class="text-xs text-gray-500">Struk Antrean Pengisian Daya Motor Listrik</p>
+    </div>
+    <div class="text-center my-6">
+      <span class="text-xs uppercase">Nomor Antrean Anda</span>
+      <h1 id="print-number" class="text-6xl font-black font-mono my-2">A-000</h1>
+    </div>
+    <div class="text-sm space-y-1 border-t border-b py-3 mb-4">
+      <p><strong>Nama:</strong> <span id="print-name">-</span></p>
+      <p><strong>Plat Motor:</strong> <span id="print-plat">-</span></p>
+      <p><strong>Waktu:</strong> <span id="print-time">-</span></p>
+    </div>
+    <div class="text-center text-xs text-gray-500">
+      <p>Harap menunggu nomor antrean dipanggil.</p>
+      <p>Terima kasih telah menggunakan kendaraan listrik!</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-cyber border-t border-slate-800 text-slate-500 text-xs py-4 text-center">
+    <div class="max-w-7xl mx-auto px-4">
+      &copy; <span id="year"></span> Sistem Antrean Charge Motor Listrik MAKA Tangerang Raya. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
+  <!-- JavaScript App Logic -->
+  <script>
+    // State Application
+    let queues = JSON.parse(localStorage.getItem('maka_queues')) || [];
+    let currentFilter = 'all';
+    let myActiveNumber = localStorage.getItem('maka_my_number') || null;
+
+    // Initial Load
+    window.onload = function() {
+      document.getElementById('year').innerText = new Date().getFullYear();
+      renderApp();
+    };
+
+    // Save to LocalStorage
+    function saveStorage() {
+      localStorage.setItem('maka_queues', JSON.stringify(queues));
+      if (myActiveNumber) {
+        localStorage.setItem('maka_my_number', myActiveNumber);
+      } else {
+        localStorage.removeItem('maka_my_number');
+      }
+    }
+
+    // Tab Switch (User / Admin)
+    function switchTab(tab) {
+      const viewUser = document.getElementById('view-user');
+      const viewAdmin = document.getElementById('view-admin');
+      const btnUser = document.getElementById('btn-tab-user');
+      const btnAdmin = document.getElementById('btn-tab-admin');
+
+      if (tab === 'user') {
+        viewUser.classList.remove('hidden');
+        viewAdmin.classList.add('hidden');
+
+        btnUser.className = "px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 bg-brand-500 text-cyber font-semibold shadow";
+        btnAdmin.className = "px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white";
+      } else {
+        viewUser.classList.add('hidden');
+        viewAdmin.classList.remove('hidden');
+
+        btnAdmin.className = "px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 bg-brand-500 text-cyber font-semibold shadow";
+        btnUser.className = "px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white";
+      }
+    }
+
+    // Create New Queue
+    function handleCreateQueue(e) {
+      e.preventDefault();
+
+      const nameInput = document.getElementById('input-name');
+      const platInput = document.getElementById('input-plat');
+      const phoneInput = document.getElementById('input-phone');
+
+      // Generate Queue Number (A-001 format)
+      const count = queues.length + 1;
+      const numStr = 'A-' + String(count).padStart(3, '0');
+
+      const newQueue = {
+        id: Date.now(),
+        number: numStr,
+        name: nameInput.value.trim(),
+        plat: platInput.value.trim().toUpperCase(),
+        phone: phoneInput.value.trim(),
+        status: 'waiting', // waiting, charging, completed, cancelled
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString('id-ID')
+      };
+
+      queues.push(newQueue);
+      myActiveNumber = newQueue.number;
+      saveStorage();
+
+      // Reset form
+      nameInput.value = '';
+      platInput.value = '';
+      phoneInput.value = '';
+
+      showToast(`Antrean ${newQueue.number} berhasil dibuat!`, 'success');
+      renderApp();
+    }
+
+    // Cancel My Queue (User)
+    function cancelMyQueue() {
+      if (!myActiveNumber) return;
+      const index = queues.findIndex(q => q.number === myActiveNumber);
+      if (index !== -1) {
+        queues[index].status = 'cancelled';
+        showToast(`Antrean ${myActiveNumber} telah dibatalkan.`, 'info');
+        myActiveNumber = null;
+        saveStorage();
+        renderApp();
+      }
+    }
+
+    // Check Queue Status manually
+    function checkQueueStatus() {
+      const codeInput = document.getElementById('check-code-input');
+      const code = codeInput.value.trim().toUpperCase();
+      if (!code) return;
+
+      const found = queues.find(q => q.number === code);
+      if (found) {
+        myActiveNumber = found.number;
+        saveStorage();
+        renderApp();
+        showToast(`Menampilkan antrean ${found.number}`, 'success');
+      } else {
+        showToast(`Nomor antrean ${code} tidak ditemukan!`, 'error');
+      }
+    }
+
+    // Admin: Call Next Queue
+    function callNextQueue() {
+      const waitingQueue = queues.find(q => q.status === 'waiting');
+
+      if (!waitingQueue) {
+        showToast('Tidak ada antrean dalam status menunggu.', 'warning');
+        return;
+      }
+
+      // Complete previous charging item if any
+      queues.forEach(q => {
+        if (q.status === 'charging') {
+          q.status = 'completed';
+        }
+      });
+
+      waitingQueue.status = 'charging';
+      saveStorage();
+      renderApp();
+
+      speakAnnouncement(waitingQueue.number);
+      showToast(`Memanggil antrean ${waitingQueue.number}`, 'success');
+    }
+
+    // Admin: Call Current Queue Again
+    function callCurrentAgain() {
+      const current = queues.find(q => q.status === 'charging');
+      if (current) {
+        speakAnnouncement(current.number);
+        showToast(`Memanggil ulang ${current.number}`, 'info');
+      }
+    }
+
+    // Admin: Complete Charging
+    function completeCharging() {
+      const current = queues.find(q => q.status === 'charging');
+      if (current) {
+        current.status = 'completed';
+        saveStorage();
+        renderApp();
+        showToast(`Charging untuk antrean ${current.number} selesai.`, 'success');
+      }
+    }
+
+    // Admin: Change Queue Status directly
+    function updateStatus(id, newStatus) {
+      const q = queues.find(item => item.id === id);
+      if (q) {
+        q.status = newStatus;
+        saveStorage();
+        renderApp();
+        showToast(`Status ${q.number} diubah menjadi ${newStatus}`, 'info');
+      }
+    }
+
+    // Admin: Reset All
+    function confirmResetAll() {
+      if (confirm('Apakah Anda yakin ingin mereset seluruh antrean hari ini? Data tidak bisa dikembalikan.')) {
+        queues = [];
+        myActiveNumber = null;
+        saveStorage();
+        renderApp();
+        showToast('Seluruh data antrean berhasil direset.', 'info');
+      }
+    }
+
+    // Text To Speech Call Function
+    function speakAnnouncement(numberStr) {
+      const isVoiceEnabled = document.getElementById('voice-enable').checked;
+      if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
+
+      window.speechSynthesis.cancel(); // Stop previous voice
+
+      // Convert "A-001" to readable text "A 1" for clear speech
+      const formattedNum = numberStr.replace('-', ' ');
+      const text = `Nomor antrean ${formattedNum}, silakan menuju area pengisian daya motor listrik MAKA.`;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'id-ID';
+      utterance.rate = 0.9;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Admin Filter Control
+    function setFilter(filter) {
+      currentFilter = filter;
+
+      const filters = ['all', 'waiting', 'charging', 'completed', 'cancelled'];
+      filters.forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (f === filter) {
+          btn.className = "px-3 py-1.5 rounded-md font-medium text-cyber bg-brand-400 font-bold";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-md font-medium text-slate-400 hover:text-white";
+        }
+      });
+
+      renderAdminTable();
+    }
+
+    // Render App Components
+    function renderApp() {
+      renderUserView();
+      renderAdminView();
+    }
+
+    // Render User Area
+    function renderUserView() {
+      const currentCharging = queues.find(q => q.status === 'charging');
+      
+      // Top Current Status Display
+      const userCurrentNumEl = document.getElementById('user-current-number');
+      const userCurrentStatusEl = document.getElementById('user-current-status');
+
+      if (currentCharging) {
+        userCurrentNumEl.innerText = currentCharging.number;
+        userCurrentStatusEl.innerText = `Motor: ${currentCharging.plat}`;
+      } else {
+        userCurrentNumEl.innerText = "---";
+        userCurrentStatusEl.innerText = "Belum ada aktivitas";
+      }
+
+      // My Active Ticket Display
+      const emptyState = document.getElementById('ticket-empty-state');
+      const activeState = document.getElementById('ticket-active-state');
+
+      const myTicket = queues.find(q => q.number === myActiveNumber);
+
+      if (myTicket) {
+        emptyState.classList.add('hidden');
+        activeState.classList.remove('hidden');
+
+        document.getElementById('ticket-num').innerText = myTicket.number;
+        document.getElementById('ticket-name').innerText = myTicket.name;
+        document.getElementById('ticket-plat').innerText = myTicket.plat;
+        document.getElementById('ticket-time').innerText = myTicket.time;
+
+        // Print elements update
+        document.getElementById('print-number').innerText = myTicket.number;
+        document.getElementById('print-name').innerText = myTicket.name;
+        document.getElementById('print-plat').innerText = myTicket.plat;
+        document.getElementById('print-time').innerText = myTicket.time;
+
+        const badge = document.getElementById('ticket-status-badge');
+        if (myTicket.status === 'waiting') {
+          badge.className = "inline-block px-3 py-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-full text-xs font-semibold mb-4";
+          badge.innerText = "Menunggu Dipanggil";
+        } else if (myTicket.status === 'charging') {
+          badge.className = "inline-block px-3 py-1 bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-full text-xs font-semibold mb-4 animate-pulse";
+          badge.innerText = "Sedang Di-Charge";
+        } else if (myTicket.status === 'completed') {
+          badge.className = "inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-semibold mb-4";
+          badge.innerText = "Pengisian Selesai";
+        } else {
+          badge.className = "inline-block px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-full text-xs font-semibold mb-4";
+          badge.innerText = "Dibatalkan";
+        }
+
+      } else {
+        emptyState.classList.remove('hidden');
+        activeState.classList.add('hidden');
+      }
+
+      // Public Queue Table
+      const publicTbody = document.getElementById('public-queue-tbody');
+      publicTbody.innerHTML = '';
+
+      if (queues.length === 0) {
+        publicTbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">Belum ada antrean terdaftar hari ini.</td></tr>`;
+      } else {
+        queues.forEach(q => {
+          let statusBadge = '';
+          if (q.status === 'waiting') {
+            statusBadge = `<span class="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded text-xs font-medium border border-yellow-500/20">Menunggu</span>`;
+          } else if (q.status === 'charging') {
+            statusBadge = `<span class="px-2 py-0.5 bg-brand-500/10 text-brand-400 rounded text-xs font-medium border border-brand-500/20 animate-pulse">Sedang Charge</span>`;
+          } else if (q.status === 'completed') {
+            statusBadge = `<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-xs font-medium border border-emerald-500/20">Selesai</span>`;
+          } else {
+            statusBadge = `<span class="px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-medium border border-red-500/20">Batal</span>`;
+          }
+
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-cyberlight/30 transition-colors";
+          tr.innerHTML = `
+            <td class="px-4 py-3 font-mono font-bold ${q.number === myActiveNumber ? 'text-brand-400' : 'text-white'}">${q.number} ${q.number === myActiveNumber ? '(Anda)' : ''}</td>
+            <td class="px-4 py-3">${escapeHtml(q.name)}</td>
+            <td class="px-4 py-3 font-mono">${escapeHtml(q.plat)}</td>
+            <td class="px-4 py-3 text-xs text-slate-400">${q.time}</td>
+            <td class="px-4 py-3 text-center">${statusBadge}</td>
+          `;
+          publicTbody.appendChild(tr);
+        });
+      }
+    }
+
+    // Render Admin Area
+    function renderAdminView() {
+      // Statistics
+      const total = queues.length;
+      const waiting = queues.filter(q => q.status === 'waiting').length;
+      const charging = queues.filter(q => q.status === 'charging').length;
+      const completed = queues.filter(q => q.status === 'completed').length;
+
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-waiting').innerText = waiting;
+      document.getElementById('stat-charging').innerText = charging;
+      document.getElementById('stat-completed').innerText = completed;
+
+      // Current Serving Control Box
+      const currentCharging = queues.find(q => q.status === 'charging');
+      const adminNumEl = document.getElementById('admin-current-num');
+      const adminInfoEl = document.getElementById('admin-current-info');
+      const btnRecall = document.getElementById('btn-recall');
+      const btnComplete = document.getElementById('btn-complete');
+
+      if (currentCharging) {
+        adminNumEl.innerText = currentCharging.number;
+        adminInfoEl.innerText = `${currentCharging.name} (${currentCharging.plat})`;
+        btnRecall.disabled = false;
+        btnComplete.disabled = false;
+      } else {
+        adminNumEl.innerText = "---";
+        adminInfoEl.innerText = "Tidak ada motor yang sedang di-charge";
+        btnRecall.disabled = true;
+        btnComplete.disabled = true;
+      }
+
+      renderAdminTable();
+    }
+
+    // Render Admin Queue Table with Filter
+    function renderAdminTable() {
+      const adminTbody = document.getElementById('admin-queue-tbody');
+      adminTbody.innerHTML = '';
+
+      let filteredQueues = queues;
+      if (currentFilter !== 'all') {
+        filteredQueues = queues.filter(q => q.status === currentFilter);
+      }
+
+      if (filteredQueues.length === 0) {
+        adminTbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-500">Tidak ada data antrean untuk filter ini.</td></tr>`;
+        return;
+      }
+
+      filteredQueues.forEach(q => {
+        let statusBadge = '';
+        if (q.status === 'waiting') {
+          statusBadge = `<span class="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded text-xs font-medium border border-yellow-500/20">Menunggu</span>`;
+        } else if (q.status === 'charging') {
+          statusBadge = `<span class="px-2 py-0.5 bg-brand-500/10 text-brand-400 rounded text-xs font-medium border border-brand-500/20">Sedang Charge</span>`;
+        } else if (q.status === 'completed') {
+          statusBadge = `<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-xs font-medium border border-emerald-500/20">Selesai</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-medium border border-red-500/20">Batal</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-cyberlight/30 transition-colors";
+        tr.innerHTML = `
+          <td class="px-4 py-3 font-mono font-bold text-white">${q.number}</td>
+          <td class="px-4 py-3 font-medium text-slate-200">${escapeHtml(q.name)}</td>
+          <td class="px-4 py-3 font-mono text-xs">${escapeHtml(q.plat)}</td>
+          <td class="px-4 py-3 text-xs text-slate-400">${escapeHtml(q.phone)}</td>
+          <td class="px-4 py-3 text-xs text-slate-400">${q.time}</td>
+          <td class="px-4 py-3">${statusBadge}</td>
+          <td class="px-4 py-3 text-right space-x-1">
+            <button onclick="updateStatus(${q.id}, 'charging')" title="Mulai Charge" class="p-1.5 bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 rounded border border-brand-500/30 text-xs transition">
+              <i class="fa-solid fa-bolt"></i>
+            </button>
+            <button onclick="updateStatus(${q.id}, 'completed')" title="Tandai Selesai" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30 text-xs transition">
+              <i class="fa-solid fa-check"></i>
+            </button>
+            <button onclick="updateStatus(${q.id}, 'cancelled')" title="Batalkan" class="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded border border-red-500/30 text-xs transition">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </td>
+        `;
+        adminTbody.appendChild(tr);
+      });
+    }
+
+    // Helper: Escape HTML
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Toast Notification System
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let bgColors = 'bg-cyberlight border-slate-700 text-white';
+      if (type === 'success') bgColors = 'bg-cyber border-brand-500 text-brand-400';
+      if (type === 'error') bgColors = 'bg-cyber border-red-500 text-red-400';
+      if (type === 'warning') bgColors = 'bg-cyber border-yellow-500 text-yellow-400';
+
+      toast.className = `flex items-center space-x-2 border px-4 py-3 rounded-xl shadow-xl text-xs font-semibold transition-all duration-300 transform translate-y-2 opacity-0 ${bgColors}`;
+      toast.innerHTML = `<span>${message}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
